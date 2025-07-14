@@ -1,5 +1,5 @@
 # 💫 About Me:
-👋 About Me<br>Hi, I'm Kai — a student, developer, and creative mind passionate about building practical and visually engaging digital experiences.<br><br>🧠 I'm currently focused on:<br><br>Java & Spring Boot backend development<br><br>Full-stack web apps (React, Firebase, APIs)<br><br>UI/UX design for Roblox environments and game development<br><br>💼 Currently learning and building with:<br><br>Java, Python,  JavaScript<br><br>Firebase, PostgreSQL, Git & GitHub<br><br>Figma, Recharts, and Spring Boot<br><br>🎯 Outside of coding:<br><br>Teen President for Jack and Jill of America (New Castle County)<br><br>Passionate about leadership, DEI initiatives, and design aesthetics<br><br>Big believer in the power of youth-led innovation
+Hey, I’m Kai — a student and developer focused on building clean, useful, and creative tech.<br><br>💻 I work with Java, Spring Boot, Firebase, and React<br>🎯 Passionate about backend development, design, and DEI leadership<br><br>Let’s connect and build something impactful!
 
 
 ## 🌐 Socials:

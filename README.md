@@ -1,24 +1,31 @@
-<h1 align="center">Hi 👋, I'm Kai!</h1>
-<h3 align="center">I'm a 16 year old developer from the U.S!</h3>
+# 💫 About Me:
+👋 About Me<br>Hi, I'm Kai — a student, developer, and creative mind passionate about building practical and visually engaging digital experiences.<br><br>🧠 I'm currently focused on:<br><br>Java & Spring Boot backend development<br><br>Full-stack web apps (React, Firebase, APIs)<br><br>UI/UX design for Roblox environments and game development<br><br>💼 Currently learning and building with:<br><br>Java, Python,  JavaScript<br><br>Firebase, PostgreSQL, Git & GitHub<br><br>Figma, Recharts, and Spring Boot<br><br>🎯 Outside of coding:<br><br>Teen President for Jack and Jill of America (New Castle County)<br><br>Passionate about leadership, DEI initiatives, and design aesthetics<br><br>Big believer in the power of youth-led innovation
 
-<p align="left"> <img src="https://komarev.com/ghpvc/?username=kaialexander-commits&label=Profile%20views&color=0e75b6&style=flat" alt="kaialexander-commits" /> </p>
 
-<p align="left"> <a href="https://github.com/ryo-ma/github-profile-trophy"><img src="https://github-profile-trophy.vercel.app/?username=kaialexander-commits" alt="kaialexander-commits" /></a> </p>
+## 🌐 Socials:
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-%230077B5.svg?logo=linkedin&logoColor=white)](https://linkedin.com/in/kai-alexander) [![X](https://img.shields.io/badge/X-black.svg?logo=X&logoColor=white)](https://x.com/KaiCodes_) 
 
-<p align="left"> <a href="https://twitter.com/kaicodes_" target="blank"><img src="https://img.shields.io/twitter/follow/kaicodes_?logo=twitter&style=for-the-badge" alt="kaicodes_" /></a> </p>
+# 💻 Tech Stack:
+![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54) ![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E) ![Java](https://img.shields.io/badge/java-%23ED8B00.svg?style=for-the-badge&logo=openjdk&logoColor=white) ![Firebase](https://img.shields.io/badge/firebase-%23039BE5.svg?style=for-the-badge&logo=firebase) ![Vercel](https://img.shields.io/badge/vercel-%23000000.svg?style=for-the-badge&logo=vercel&logoColor=white) ![Oracle](https://img.shields.io/badge/Oracle-F80000?style=for-the-badge&logo=oracle&logoColor=white) ![Spring](https://img.shields.io/badge/spring-%236DB33F.svg?style=for-the-badge&logo=spring&logoColor=white) ![Postgres](https://img.shields.io/badge/postgres-%23316192.svg?style=for-the-badge&logo=postgresql&logoColor=white) ![MySQL](https://img.shields.io/badge/mysql-4479A1.svg?style=for-the-badge&logo=mysql&logoColor=white)
+# 📊 GitHub Stats:
+![](https://github-readme-stats.vercel.app/api?username=KaiAlexander-commits&theme=merko&hide_border=false&include_all_commits=true&count_private=true)<br/>
+![](https://nirzak-streak-stats.vercel.app/?user=KaiAlexander-commits&theme=merko&hide_border=false)<br/>
+![](https://github-readme-stats.vercel.app/api/top-langs/?username=KaiAlexander-commits&theme=merko&hide_border=false&include_all_commits=true&count_private=true&layout=compact)
 
-<h3 align="left">Connect with me:</h3>
-<p align="left">
-<a href="https://twitter.com/kaicodes_" target="blank"><img align="center" src="https://raw.githubusercontent.com/rahuldkjain/github-profile-readme-generator/master/src/images/icons/Social/twitter.svg" alt="kaicodes_" height="30" width="40" /></a>
-<a href="https://linkedin.com/in/kai-alexander" target="blank"><img align="center" src="https://raw.githubusercontent.com/rahuldkjain/github-profile-readme-generator/master/src/images/icons/Social/linked-in-alt.svg" alt="kai-alexander" height="30" width="40" /></a>
-<a href="https://www.hackerrank.com/kai_developer3" target="blank"><img align="center" src="https://raw.githubusercontent.com/rahuldkjain/github-profile-readme-generator/master/src/images/icons/Social/hackerrank.svg" alt="kai_developer3" height="30" width="40" /></a>
-</p>
+## 🏆 GitHub Trophies
+![](https://github-profile-trophy.vercel.app/?username=KaiAlexander-commits&theme=merko&no-frame=false&no-bg=false&margin-w=4)
 
-<h3 align="left">Languages and Tools:</h3>
-<p align="left"> <a href="https://www.java.com" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/java/java-original.svg" alt="java" width="40" height="40"/> </a> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/javascript/javascript-original.svg" alt="javascript" width="40" height="40"/> </a> <a href="https://nodejs.org" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/nodejs/nodejs-original-wordmark.svg" alt="nodejs" width="40" height="40"/> </a> <a href="https://www.oracle.com/" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/oracle/oracle-original.svg" alt="oracle" width="40" height="40"/> </a> <a href="https://www.python.org" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/python/python-original.svg" alt="python" width="40" height="40"/> </a> <a href="https://spring.io/" target="_blank" rel="noreferrer"> <img src="https://www.vectorlogo.zone/logos/springio/springio-icon.svg" alt="spring" width="40" height="40"/> </a> <a href="https://www.typescriptlang.org/" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/typescript/typescript-original.svg" alt="typescript" width="40" height="40"/> </a> </p>
+### ✍️ Random Dev Quote
+![](https://quotes-github-readme.vercel.app/api?type=horizontal&theme=merko)
 
-<p><img align="left" src="https://github-readme-stats.vercel.app/api/top-langs?username=kaialexander-commits&show_icons=true&locale=en&layout=compact" alt="kaialexander-commits" /></p>
+### 🔝 Top Contributed Repo
+![](https://github-contributor-stats.vercel.app/api?username=KaiAlexander-commits&limit=5&theme=merko&combine_all_yearly_contributions=true)
 
-<p>&nbsp;<img align="center" src="https://github-readme-stats.vercel.app/api?username=kaialexander-commits&show_icons=true&locale=en" alt="kaialexander-commits" /></p>
+---
+[![](https://visitcount.itsvg.in/api?id=KaiAlexander-commits&icon=0&color=0)](https://visitcount.itsvg.in)
 
-<p><img align="center" src="https://github-readme-streak-stats.herokuapp.com/?user=kaialexander-commits&" alt="kaialexander-commits" /></p>
+  ## 💰 You can help me by Donating
+  [![PayPal](https://img.shields.io/badge/PayPal-00457C?style=for-the-badge&logo=paypal&logoColor=white)](https://paypal.me/kaismith234) 
+
+  
+<!-- Proudly created with GPRM ( https://gprm.itsvg.in ) -->

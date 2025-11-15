@@ -1,7 +1,15 @@
-# Hi, I'm Kai Smith 👋
+# Hi there! 👋
 
-### I'm a motivated student engineer passionate about full-stack development, technical challenges, and team leadership. I'm currently a student at Salesianum School (expected 2027) and previously gained experience during an internship at JPMorgan Chase.
+ I’m Kai, a software engineer passionate about full-stack development and building projects that challenge me to learn and grow.
 
-## Tech Stack:
+---
 
-### Python | Java | Spring Boot | SQL | Leadership
+# Tech Stack:  
+ Python | Java | Spring Boot | SQL
+
+---
+
+ # Projects & Interests:
+- Building full-stack applications and experimenting with new technologies  
+- Running and playing soccer  
+- Anime enthusiast

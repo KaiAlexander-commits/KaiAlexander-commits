@@ -1,7 +1,7 @@
 # Hi there! 👋
 
  I’m Kai, a software engineer passionate about full-stack development and building projects that challenge me to learn and grow.
- Founder @ Servely.com
+ Founder @ Servely.org
  
 
 ---

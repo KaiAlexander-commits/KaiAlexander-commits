@@ -99,18 +99,6 @@ def line(x1, y1, x2, y2, color='#203029'):
     return f'<path d="M{x1} {y1}H{x2}" stroke="{color}"/>' if y1 == y2 else f'<path d="M{x1} {y1}L{x2} {y2}" stroke="{color}"/>'
 
 
-def shell(height, label, body):
-    return f'''<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1000" height="{height}" viewBox="0 0 1000 {height}" role="img" aria-labelledby="title desc">
-<title id="title">{html.escape(label)}</title><desc id="desc">Kai Smith's GitHub profile. Data refreshed every six hours from public GitHub activity.</desc>
-<defs><linearGradient id="bg" x2="0.8" y2="1"><stop stop-color="#102019"/><stop offset="1" stop-color="#0a100e"/></linearGradient><clipPath id="avatar"><circle cx="76" cy="110" r="27"/></clipPath></defs>
-<g font-family="'SFMono-Regular',Consolas,'Liberation Mono',monospace">
-{rect(1, 1, 998, height-2, 'url(#bg)', 16, '#2a3e31')}{''.join(body)}</g></svg>'''
-
-
-def section(y, number, title):
-    return text(34, y, f'{number} / {title}', 12, GREEN, 600, 'letter-spacing="2"')
-
-
 def streaks(days):
     longest = run = 0
     for date in sorted(days):
@@ -126,111 +114,143 @@ def streaks(days):
     return current, longest
 
 
+def activity_candles(days):
+    """Weekly OHLC of the rolling 30-day contribution count / 10; no random prices."""
+    today = NOW.date()
+    def price(day):
+        return sum(days.get((day-dt.timedelta(days=i)).isoformat(), 0) for i in range(30)) / 10
+    start = today - dt.timedelta(days=25*7 + (today.weekday()+1)%7)
+    candles = []
+    for week in range(26):
+        first = start + dt.timedelta(days=week*7)
+        last = min(first+dt.timedelta(days=6), today)
+        dates = [first+dt.timedelta(days=i) for i in range((last-first).days+1)]
+        opening = price(first-dt.timedelta(days=1))
+        values = [opening] + [price(day) for day in dates]
+        candles.append({'open': opening, 'close': values[-1], 'high': max(values), 'low': min(values),
+                        'volume': sum(days.get(day.isoformat(), 0) for day in dates)})
+    return candles
+
+
 def render(data):
     p, repos, days = data['profile'], data['repos'], data['days']
-    last30 = [(NOW.date()-dt.timedelta(days=i)).isoformat() for i in range(29, -1, -1)]
-    counts = [days.get(d, 0) for d in last30]
-    total = sum(days.values())
-    stars = sum(r['stargazers_count'] for r in repos)
-    body = [rect(2, 2, 996, 44, '#111b16', 15), line(1, 46, 999, 46)]
-    for i, color in enumerate([RED, '#e6bd57', GREEN]):
-        body.append(f'<circle cx="{29+i*18}" cy="24" r="4" fill="{color}"/>')
-    body += [text(101, 29, f'{USER} / README', 12, MUTED), text(961, 29, 'PROFILE TERMINAL', 11, GREEN, extra='text-anchor="end"')]
-    body += [f'<image x="49" y="83" width="54" height="54" clip-path="url(#avatar)" xlink:href="data:{data["avatar_mime"]};base64,{data["avatar"]}"/>',
-             text(118, 108, '$KAI', 32, WHITE, 700), text(118, 130, 'SOFTWARE / DATA / FINANCE', 11, MUTED),
-             text(959, 102, f'{sum(counts):,}', 34, WHITE, 700, 'text-anchor="end"'),
-             text(959, 126, 'CONTRIBUTIONS · 30D', 11, GREEN, extra='text-anchor="end"'),
-             section(176, '01', 'ACTIVITY EXCHANGE'), text(34, 201, 'Daily contributions', 13, MUTED),
-             text(959, 201, '30D', 12, GREEN, extra='text-anchor="end"')]
-    chart_top, chart_bottom = 229, 383
-    maximum = max(max(counts), 1)
-    for i in range(4):
-        y = chart_top + i*(chart_bottom-chart_top)/3
-        body += [line(34, round(y, 1), 921, round(y, 1), '#1a2b22'), text(959, y+4, round(maximum*(1-i/3)), 10, MUTED, extra='text-anchor="end"')]
-    for i, count in enumerate(counts):
-        color = GREEN if i == 0 or count >= counts[i-1] else RED
-        x = 38 + i*29.2
-        h = count/maximum*(chart_bottom-chart_top)
-        body.append(rect(round(x, 1), round(chart_bottom-max(h, 2), 1), 18, round(max(h, 2), 1), color if count else '#21352a', 2))
-    body += [text(34, 408, last30[0][5:], 10, MUTED), text(921, 408, last30[-1][5:], 10, MUTED, extra='text-anchor="end"'),
-             text(34, 435, 'Green ≥ previous day  /  Red &lt; previous day'.replace('&lt;', '<'), 10, MUTED), line(34, 454, 966, 454)]
-    metrics = [('REPOSITORIES', len(repos)), ('STARS', stars), ('FOLLOWERS', p['followers']), ('CONTRIBUTIONS · YEAR', total)]
-    for i, (label, value) in enumerate(metrics):
-        x = 34 + i*239
-        body += [text(x, 482, label, 10, MUTED), text(x, 514, f'{value:,}', 23, WHITE, 600)]
-    (ROOT/'assets/market.svg').write_text(shell(542, 'Kai activity exchange', body))
-
-    body = [section(37, '02', 'THE BUILDER'), text(34, 89, p.get('name') or 'Kai Smith', 34, WHITE, 700),
-            text(34, 121, 'Python automation. Full-stack systems. Data with a purpose.', 15, WHITE),
-            text(34, 150, 'Student developer exploring the intersection of software and finance.', 12, MUTED),
-            rect(34, 176, 932, 45, '#11251a', 7, '#244a32'),
-            text(52, 204, 'FOCUS', 11, GREEN, 600), text(118, 204, 'Data science / economics / building useful things', 12),
-            section(266, '03', 'PROJECT WATCHLIST')]
-    body += [text(34, 299, 'PROJECT / THESIS', 10, MUTED), text(679, 299, 'LANGUAGE', 10, MUTED), text(831, 299, 'PUSHED', 10, MUTED), text(963, 299, 'STARS', 10, MUTED, extra='text-anchor="end"')]
-    overrides = {
-        'Employee-Manager-Dashboard': ('Employee Manager', 'React interface + Spring Boot API / one directory'),
-        'Trading-Algo': ('Trading Algo', 'Momentum signals / Alpaca / Python automation'),
-        'Apartment-Database': ('Apartment Database', 'Java maintenance-request backend / in progress'),
-        'Final-Project': ('Penguin Run', 'Python + Pygame / an endless-runner experiment'),
-        'Employee-Manager-Server': ('Employee API', 'Original Spring Boot service / preserved history'),
-    }
+    candles = activity_candles(days)
+    price, opening = candles[-1]['close'], candles[-1]['open']
+    change = (price-opening)/opening*100 if opening else None
+    up = price >= opening
+    color = GREEN if up else RED
     candidates = [r for r in repos if r['name'] != USER]
-    priority = ['Employee-Manager-Dashboard', 'Trading-Algo', 'Apartment-Database', 'Final-Project', 'Employee-Manager-Server']
+    priority = ['Apartment-Database', 'Employee-Manager-Server', 'Trading-Algo', 'Employee-Manager-Dashboard', 'Final-Project']
     candidates.sort(key=lambda r: (priority.index(r['name']) if r['name'] in priority else len(priority), r['name']))
-    for i, repo in enumerate(candidates[:6]):
-        y = 322 + i*67
-        title, desc = overrides.get(repo['name'], (repo['name'], repo.get('description') or 'Public repository'))
-        body += [line(34, y-9, 966, y-9), text(34, y+12, f'{i+1:02}', 11, GREEN), text(70, y+12, title[:48], 15, WHITE, 600),
-                 text(70, y+32, desc[:73], 10, MUTED), text(679, y+12, repo.get('language') or '—', 11, MUTED),
-                 text(831, y+12, repo['pushed_at'][:10], 10, MUTED), text(963, y+12, repo['stargazers_count'], 12, GREEN, extra='text-anchor="end"')]
-    height = 349 + len(candidates[:6])*67
-    (ROOT/'assets/watchlist.svg').write_text(shell(height, 'Kai Smith and project watchlist', body))
-
+    candidates = candidates[:6]
+    stars = sum(r['stargazers_count'] for r in repos)
+    avatar = f'data:{data["avatar_mime"]};base64,{data["avatar"]}'
     languages = sorted(data['languages'].items(), key=lambda item: item[1], reverse=True)
-    denominator = sum(data['languages'].values()) or 1
-    body = [section(37, '04', 'LANGUAGE ALLOCATION'), text(34, 65, 'Share of code bytes · original public projects', 11, MUTED)]
-    for i, (language, count) in enumerate(languages[:5]):
-        y = 102 + i*36
-        percentage = count/denominator*100
-        body += [text(34, y+4, language, 13), rect(199, y-8, 640, 10, '#223028', 5),
-                 rect(199, y-8, round(640*percentage/100, 1), 10, COLORS.get(language, GREEN), 5), text(961, y+4, f'{percentage:.1f}%', 12, MUTED, extra='text-anchor="end"')]
-    body += [line(34, 284, 966, 284), section(319, '05', 'CONSISTENCY LEDGER')]
-    current, longest = streaks(days)
-    start = dt.date.fromisoformat(min(days))
-    start -= dt.timedelta(days=(start.weekday()+1)%7)
-    shades = ['#17271e', '#163d25', '#226938', '#37a653', GREEN]
-    for date, count in sorted(days.items()):
-        day = dt.date.fromisoformat(date)
-        offset = (day-start).days
-        x, y = 34 + (offset//7)*12, 366 + (offset%7)*12
-        level = 0 if count == 0 else 1 if count < 3 else 2 if count < 6 else 3 if count < 10 else 4
-        body.append(f'<g><title>{date}: {count} contributions</title>{rect(x,y,9,9,shades[level],2)}</g>')
-    body += [text(34, 352, min(days)[:7], 10, MUTED), text(671, 352, max(days)[:7], 10, MUTED, extra='text-anchor="end"')]
-    for i, (label, value) in enumerate([('CURRENT STREAK', f'{current} day' + ('s' if current != 1 else '')), ('LONGEST · THIS YEAR', f'{longest} day' + ('s' if longest != 1 else '')), ('CONTRIBUTIONS · YEAR', f'{total:,}')]):
-        y = 354 + i*48
-        body += [text(745, y, label, 9, MUTED), text(745, y+22, value, 19, WHITE, 600)]
-    body += [text(34, 477, 'Less', 9, MUTED)]
-    for i, color in enumerate(shades):
-        body.append(rect(70+i*14, 468, 10, 10, color, 2))
-    body += [text(148, 477, 'More', 9, MUTED), line(34, 506, 966, 506),
-             text(34, 537, 'PUBLIC GITHUB DATA / REFRESH EVERY 6 HOURS', 10, GREEN),
-             text(965, 537, data['updated'], 10, MUTED, extra='text-anchor="end"')]
-    (ROOT/'assets/telemetry.svg').write_text(shell(561, 'Code languages and contribution calendar', body))
-    links = ' · '.join(f'[{overrides.get(r["name"], (r["name"],))[0]}]({r["html_url"]})' for r in candidates[:6])
-    readme = f'''<!-- Generated by scripts/update_profile.py. Personal copy is in the renderer; public stats update automatically. -->
-<a href="https://github.com/{USER}?tab=overview"><img src="assets/market.svg" width="100%" alt="Kai Smith — activity exchange, 30-day contribution chart, repositories, stars and followers" /></a>
+    sector = languages[0][0] if languages else 'CODE'
+    body = [rect(1, 1, 998, 44, '#111917'), line(1, 45, 999, 45, '#2c3730')]
+    for i, dot in enumerate([RED, '#efc153', GREEN]):
+        body.append(f'<circle cx="{26+i*17}" cy="23" r="4" fill="{dot}"/>')
+    body += [text(92, 28, f'{USER} / README.md', 11, MUTED), text(965, 28, 'AUTO · 6H', 10, GREEN, extra='text-anchor="end"'),
+             f'<image x="45" y="84" width="54" height="54" clip-path="url(#small-avatar)" xlink:href="{avatar}"/>',
+             text(111, 111, '$KAIAL', 31, WHITE, 800, 'font-family="Arial,sans-serif"'),
+             rect(257, 88, 164, 25, '#152d35', 13, '#255267'), text(339, 105, f'SECTOR · {sector.upper()}', 10, '#5da5cd', 600, 'text-anchor="middle"'),
+             text(111, 137, 'Kai Smith · GitHub · price = 30-day contributions / 10', 11, MUTED, extra='font-family="Arial,sans-serif"'),
+             text(955, 114, f'${price:.2f}', 36, WHITE, 800, 'text-anchor="end" font-family="Arial,sans-serif"'),
+             text(955, 139, f'{"▲" if up else "▼"} {abs(change):.1f}% · 1 week' if change is not None else f'{"▲" if up else "▼"} ${abs(price-opening):.2f} · 1 week', 11, color, extra='text-anchor="end"')]
+    chart_x, chart_y, chart_w, chart_h = 45, 171, 910, 250
+    low = min(c['low'] for c in candles)
+    high = max(c['high'] for c in candles)
+    span = max(high-low, .1)
+    def y(value):
+        return round(chart_y+chart_h-(value-low)/span*chart_h, 2)
+    for fraction in [0, .25, .5, .75, 1]:
+        yy = chart_y + chart_h*fraction
+        body.append(line(chart_x, yy, chart_x+chart_w, yy, '#23302b'))
+    max_volume = max(max(c['volume'] for c in candles), 1)
+    for i, c in enumerate(candles):
+        x = chart_x + i*35
+        green = c['close'] >= c['open']
+        cc = GREEN if green else RED
+        body += [line(x+10, y(c['high']), x+10, y(c['low']), cc),
+                 rect(x, min(y(c['open']), y(c['close'])), 22, max(abs(y(c['open'])-y(c['close'])), 1.5), cc),
+                 rect(x, 491-c['volume']/max_volume*60, 22, c['volume']/max_volume*60, '#3b444d')]
+    body += [text(45, 510, 'volume = contributions per week · last 26 weeks', 10, MUTED), text(955, 510, 'github.com', 10, MUTED, extra='text-anchor="end"')]
+    ticker_items = []
+    for r in candidates:
+        symbol = r['name'].replace('-','').upper()[:16]
+        ticker_items.append(f'{symbol} ★{r["stargazers_count"]} ▲')
+    ticker = '     '.join(ticker_items)
+    ticker_width = max(960, len(ticker)*6.65+80)
+    body += [rect(45, 535, 910, 34, '#161f26'), '<g clip-path="url(#ticker-clip)"><g>',
+             f'<animateTransform attributeName="transform" type="translate" from="0 0" to="-{ticker_width} 0" dur="36s" repeatCount="indefinite"/>',
+             text(61, 557, ticker, 11, '#d5e2df', 600), text(61+ticker_width, 557, ticker, 11, '#d5e2df', 600), '</g></g>',
+             text(45, 611, 'Activity index: $1.00 = 10 GitHub contributions in the trailing 30 days.', 11, '#b3bdbb', extra='font-family="Arial,sans-serif"')]
 
-<img src="assets/watchlist.svg" width="100%" alt="Kai Smith — student developer focused on software, data and finance; public project watchlist" />
+    def card(top, height, label):
+        return [rect(45, top, 910, height, '#0d1218', 12, '#253039'), text(81, top+41, f'▲ {label}', 11, GREEN, 600, 'letter-spacing="1.6"'), line(45, top+64, 955, top+64, '#253039')]
+    body += card(634, 230, 'COMPANY PROFILE')
+    body += [text(81, 739, p.get('name') or 'Kai Smith', 31, WHITE, 800, 'font-family="Arial,sans-serif"'),
+             text(81, 777, 'Python developer. Building software, exploring data and finance.', 16, '#d4dcdf', 500, 'font-family="Arial,sans-serif"'),
+             text(81, 824, f'{p.get("location") or "USA"} · {p["followers"]} followers · {len(repos)} repositories · ★ {stars} stars', 11, MUTED),
+             f'<image x="790" y="695" width="126" height="126" clip-path="url(#large-avatar)" xlink:href="{avatar}"/>',
+             '<circle cx="853" cy="758" r="65" fill="none" stroke="#3fca53" stroke-width="4"/>']
+    holdings_top = 886
+    holdings_h = 91+len(candidates)*47
+    body += card(holdings_top, holdings_h, 'HOLDINGS')
+    for i, repo in enumerate(candidates):
+        yy = holdings_top+108+i*47
+        symbol = repo['name'].upper().replace('-','')[:5]
+        language = repo.get('language') or ('Python' if repo['name']=='Final-Project' else 'Code')
+        lcolor = COLORS.get(language, GREEN)
+        age = (NOW-dt.datetime.fromisoformat(repo['pushed_at'].replace('Z','+00:00'))).total_seconds()/86400
+        state = 'archived' if repo['archived'] else 'recent' if age <=30 else 'idle'
+        state_color = GREEN if state=='recent' else MUTED
+        if i:
+            body.append(line(81, yy-24, 919, yy-24, '#303840'))
+        body += [text(81, yy, symbol, 12, WHITE, 700), rect(175, yy-13, 17, 17, lcolor, 3),
+                 text(204, yy, repo['name'][:36], 13, MUTED, extra='font-family="Arial,sans-serif"'),
+                 text(688, yy, repo['pushed_at'][:10], 10, MUTED), text(826, yy, f'★ {repo["stargazers_count"]}', 13, WHITE, 600),
+                 text(920, yy, f'▲ {state}', 10, state_color, extra='text-anchor="end"')]
+    allocation_top = holdings_top+holdings_h+22
+    body += card(allocation_top, 292, 'SECTOR ALLOCATION')
+    denominator = sum(data['languages'].values()) or 1
+    for i, (language, count) in enumerate(languages[:5]):
+        yy = allocation_top+106+i*36
+        share = count/denominator*100
+        body += [rect(81, yy-15, 21, 21, COLORS.get(language, GREEN), 4), text(113, yy, language, 14, WHITE, 700, 'font-family="Arial,sans-serif"'),
+                 rect(283, yy-11, 557, 16, '#3b434b', 8), rect(283, yy-11, 557*share/100, 16, COLORS.get(language, GREEN), 8),
+                 text(920, yy+1, f'{share:.0f}%', 12, MUTED, extra='text-anchor="end"')]
+    volume_top = allocation_top+314
+    body += card(volume_top, 269, 'VOLUME · 26 WEEKS')
+    today = NOW.date()
+    sunday = today-dt.timedelta(days=(today.weekday()+1)%7)
+    start = sunday-dt.timedelta(weeks=25)
+    shades = ['#19232b', '#123d29', '#17633a', '#238e41', GREEN]
+    for i in range((today-start).days+1):
+        day = start+dt.timedelta(days=i)
+        count = days.get(day.isoformat(), 0)
+        level = 0 if count==0 else 1 if count<3 else 2 if count<6 else 3 if count<10 else 4
+        body += [f'<g><title>{day}: {count} contributions</title>{rect(81+i//7*16,volume_top+89+i%7*16,12,12,shades[level],2)}</g>']
+    current, longest = streaks(days)
+    for i, (label, value) in enumerate([('UP DAYS IN A ROW', f'{current} day'+('s' if current!=1 else '')), ('BEST RUN · YEAR', f'{longest} day'+('s' if longest!=1 else '')), ('VOLUME THIS YEAR', str(sum(days.values())))]):
+        yy = volume_top+96+i*58
+        body += [text(584, yy, label, 10, MUTED, extra='letter-spacing="1.5"'), text(584, yy+25, value, 23, WHITE, 800, 'font-family="Arial,sans-serif"')]
+    height = volume_top+330
+    body += [text(45, height-31, 'GITHUB ACTIVITY / AUTO REFRESH EVERY 6 HOURS', 10, GREEN), text(955, height-31, data['updated'], 10, MUTED, extra='text-anchor="end"')]
+    defs = f'<defs><linearGradient id="bg" x2="0" y2="1"><stop stop-color="#17211b"/><stop offset=".45" stop-color="#0d1317"/><stop offset="1" stop-color="#080f0b"/></linearGradient><clipPath id="small-avatar"><circle cx="72" cy="111" r="27"/></clipPath><clipPath id="large-avatar"><circle cx="853" cy="758" r="63"/></clipPath><clipPath id="ticker-clip">{rect(45,535,910,34,"white")}</clipPath></defs>'
+    svg = f'<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1000" height="{height}" viewBox="0 0 1000 {height}" role="img" aria-labelledby="title"><title id="title">Kai Smith stock ticker — updating GitHub activity index</title>{defs}{rect(1,1,998,height-2,"url(#bg)",13,"#425c43")}<g font-family="Consolas,monospace">{"".join(body)}</g></svg>'
+    (ROOT/'assets/terminal.svg').write_text(svg)
+    links = ' · '.join(f'[{r["name"]}]({r["html_url"]})' for r in candidates)
+    readme = f'''<!-- Generated by scripts/update_profile.py -->
+<img src="assets/terminal.svg" width="100%" alt="Kai Smith stock ticker: activity-based price, 26-week candlestick chart and volume, scrolling project ticker, company profile, holdings, language allocation, and contribution streaks." />
 
 {links}
 
-<img src="assets/telemetry.svg" width="100%" alt="Live language composition, contribution calendar, current and longest streaks, and last refresh time" />
-
 <div align="center">
 
-[GitHub](https://github.com/{USER}) · [All projects](https://github.com/{USER}?tab=repositories) · [Refresh status](https://github.com/{USER}/{USER}/actions/workflows/profile.yml)
+[GitHub](https://github.com/{USER}) · [Refresh status](https://github.com/{USER}/{USER}/actions/workflows/profile.yml)
 
-<sub>Built from my public GitHub activity. Scheduled refresh every six hours; GitHub may delay scheduled runs. Language shares exclude forks, this profile, and the standalone Employee API copy. Streaks use the displayed calendar; an active yesterday streak carries through today.</sub>
+<sub>Price = trailing 30-day GitHub contributions ÷ 10. Weekly candles show opening, highest, lowest and closing values of that activity index; volume is actual weekly contributions. Refreshes every six hours, subject to GitHub scheduling delays. Language shares exclude forks, this profile and the standalone Employee API copy. Holdings marked recent were pushed within 30 days.</sub>
 
 </div>
 '''

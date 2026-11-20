@@ -4,6 +4,7 @@ import datetime as dt
 import html
 import json
 import os
+import xml.etree.ElementTree as ET
 from collections import Counter
 from concurrent.futures import ThreadPoolExecutor
 from html.parser import HTMLParser
@@ -14,7 +15,7 @@ ROOT = Path(__file__).resolve().parents[1]
 USER = os.environ.get('PROFILE_USER', 'KaiAlexander-commits')
 NOW = dt.datetime.now(dt.timezone.utc)
 GREEN, RED, WHITE, MUTED = '#57e389', '#ff6577', '#eaf2ed', '#82958c'
-COLORS = {'Python': '#68b8f8', 'Java': '#e6a454', 'JavaScript': '#f1d95b', 'CSS': '#b69bf8', 'HTML': '#f67c63', 'TypeScript': '#5ba9e8', 'Shell': '#8be9a0'}
+COLORS = {'Python': '#3776ab', 'Java': '#b77913', 'JavaScript': '#f1e45b', 'CSS': '#ad91c7', 'HTML': '#e44d26', 'TypeScript': '#3178c6', 'Shell': '#8be9a0', 'Dockerfile': '#45616a', 'Vue': '#41b883', 'Markdown': '#829aca'}
 
 
 def fetch(url, raw=False):
@@ -93,6 +94,23 @@ def text(x, y, value, size=14, color=WHITE, weight=400, extra=''):
 
 def rect(x, y, w, h, fill, radius=0, stroke='none'):
     return f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="{radius}" fill="{fill}" stroke="{stroke}"/>'
+
+
+def language_icon(language, x, y, size):
+    """Embed vendored Devicon vectors so logos survive GitHub image rendering."""
+    path = ROOT/'assets/icons'/f'{language.lower()}.svg'
+    if not path.is_file():
+        return rect(x, y, size, size, '#253640', 3) + text(x+size/2, y+size*.72, language[:2], size*.5, WHITE, 700, 'text-anchor="middle"')
+    ET.register_namespace('', 'http://www.w3.org/2000/svg')
+    icon = ET.fromstring(path.read_text())
+    for key, value in {'x': x, 'y': y, 'width': size, 'height': size}.items():
+        icon.set(key, str(value))
+    if language == 'Markdown':
+        icon.set('fill', WHITE)
+        for element in icon.iter():
+            if element.get('fill') in {'#000', '#000000', 'black'}:
+                element.set('fill', WHITE)
+    return ET.tostring(icon, encoding='unicode')
 
 
 def line(x1, y1, x2, y2, color='#203029'):
@@ -201,13 +219,12 @@ def render(data):
         yy = holdings_top+108+i*47
         symbol = repo['name'].upper().replace('-','')[:5]
         language = repo.get('language') or ('Python' if repo['name']=='Final-Project' else 'Code')
-        lcolor = COLORS.get(language, GREEN)
         age = (NOW-dt.datetime.fromisoformat(repo['pushed_at'].replace('Z','+00:00'))).total_seconds()/86400
         state = 'archived' if repo['archived'] else 'recent' if age <=30 else 'idle'
         state_color = GREEN if state=='recent' else MUTED
         if i:
             body.append(line(81, yy-24, 919, yy-24, '#303840'))
-        body += [text(81, yy, symbol, 12, WHITE, 700), rect(175, yy-13, 17, 17, lcolor, 3),
+        body += [text(81, yy, symbol, 12, WHITE, 700), language_icon(language, 175, yy-15, 20),
                  text(204, yy, repo['name'][:36], 13, MUTED, extra='font-family="Arial,sans-serif"'),
                  text(688, yy, repo['pushed_at'][:10], 10, MUTED), text(826, yy, f'★ {repo["stargazers_count"]}', 13, WHITE, 600),
                  text(920, yy, f'▲ {state}', 10, state_color, extra='text-anchor="end"')]
@@ -217,7 +234,7 @@ def render(data):
     for i, (language, count) in enumerate(languages[:5]):
         yy = allocation_top+106+i*36
         share = count/denominator*100
-        body += [rect(81, yy-15, 21, 21, COLORS.get(language, GREEN), 4), text(113, yy, language, 14, WHITE, 700, 'font-family="Arial,sans-serif"'),
+        body += [language_icon(language, 80, yy-18, 25), text(113, yy, language, 14, WHITE, 700, 'font-family="Arial,sans-serif"'),
                  rect(283, yy-11, 557, 16, '#3b434b', 8), rect(283, yy-11, 557*share/100, 16, COLORS.get(language, GREEN), 8),
                  text(920, yy+1, f'{share:.0f}%', 12, MUTED, extra='text-anchor="end"')]
     volume_top = allocation_top+314
